@@ -27,7 +27,7 @@ def makeContext():
     f=open(DATASET_FILE,"r")
     # read and iterate through each line of the dataset
     for line in f:
-        line=line.strip().split(" ") #Clean the data by splitting at spaces 
+        line=line.lower().strip().split(" ") #Clean the data by splitting at spaces 
         doclen=len(line)
 
         #enumerate returns index, word from raw data array
