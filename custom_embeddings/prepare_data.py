@@ -1,7 +1,4 @@
-from cgi import test
-from functools import partial
-from optparse import Values
-from queue import Empty
+import itertools
 import numpy as np
 import json
 from constants import *
@@ -156,17 +153,13 @@ with open(DATASET_FILE,"r") as f:
             for _ in range(len(full_dataset_context)):
                 y.append(word)
         
-
-
-print(x)
-print(y)
  
 # replace the context strings with corresponding context matrix
 
 x_context=[]
 y_context=[]
 
-for index,value in tqdm(enumerate(x)):
+for index,value in enumerate(x):
     temp=[]
     for k in value:
         if k == PAD_STRING:
@@ -181,13 +174,13 @@ for index,value in tqdm(enumerate(x)):
     y_context.append(y[index])
 
 
-print(x_context)
-print(y_context)
+# print(np.array(x_context).shape)
+# print(y_context)
 
 x_onehot=[]
 y_onehot=[]
 
-print(one_hot)
+# print(one_hot)
 
 for index,value in enumerate(x):
     temp=[]
@@ -200,5 +193,25 @@ for index,value in enumerate(x):
     x_onehot.append(temp)
     y_onehot.append(list(one_hot[y[index]]))
 
-print(x_onehot)
-print(y_onehot)
+# print(np.array(x_onehot).shape)
+# print(y_onehot)
+
+#multiply one hot array and context map array
+x_train=[]
+y_train=np.array(y_onehot)
+
+for oneh,con in zip(x_onehot,x_context):
+    temp=[]
+    for j,k in zip(oneh,con):
+        multiplied_data=np.multiply.outer(np.array(j),np.array(k))
+        temp.append(multiplied_data)
+
+    x_train.append(temp)
+        
+x_train=np.array(x_train)
+
+print("x_train shape: ",x_train.shape)
+print("y_train shape: ",y_train.shape)
+
+np.save("data/x_train.npy",x_train)
+np.save("data/y_train.npy",y_train)
