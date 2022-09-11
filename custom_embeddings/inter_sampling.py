@@ -1,14 +1,6 @@
 import json
 import pprint
-
-DATASET_FILE ="data/text6"
-WINDOW = 3
-WINDOW_FLOAT = 3.0
-MAX_RATE = 8.0
-DIMENSION = 10 # initially dim was 100
-SAMPLE_ACCURACY = 4000
-WORDS=[]
-CONTEXT={} # This dict will store context map for entire dataset
+from constants import *
 
 def counter_update(list,newlist):
     for _,x in enumerate(newlist):
