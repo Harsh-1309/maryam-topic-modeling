@@ -17,6 +17,11 @@ with open(DATASET_FILE,"r") as f:
 words=list(dict.fromkeys(words))
 vocab_size=len(words)
 
+#vocab size will be updated based on dataset used
+with open("constants.py","a") as const:
+    const.write(f"\nVOCAB_SIZE={vocab_size}")
+
+
 word2int = {}
 int2word = {}
 one_hot = {}
@@ -198,7 +203,7 @@ for index,value in enumerate(x):
 
 #multiply one hot array and context map array
 x_train=[]
-y_train=np.array(y_onehot)
+y_train=np.asarray(y_onehot,dtype="float32")
 
 for oneh,con in zip(x_onehot,x_context):
     temp=[]
@@ -206,12 +211,17 @@ for oneh,con in zip(x_onehot,x_context):
         multiplied_data=np.multiply.outer(np.array(j),np.array(k))
         temp.append(multiplied_data)
 
-    x_train.append(temp)
+    x_train.append(np.array(temp).flatten())
         
-x_train=np.array(x_train)
+x_train=np.asarray(x_train,dtype="float32")
 
 print("x_train shape: ",x_train.shape)
 print("y_train shape: ",y_train.shape)
 
 np.save("data/x_train.npy",x_train)
 np.save("data/y_train.npy",y_train)
+
+with open("data/word2int.json","w") as f:
+    json.dump(word2int,f)
+# print(vocab_size)
+# print(x_train[0])

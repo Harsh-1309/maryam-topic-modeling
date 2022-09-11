@@ -8,3 +8,4 @@ DIMENSION = 10 # initially dim was 100
 SAMPLE_ACCURACY = 4000
 WORDS=[]
 CONTEXT={} # This dict will store context map for entire dataset
+VOCAB_SIZE=14
