@@ -6,41 +6,36 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 from tensorflow.keras import Input
 import numpy as np
 import json
-
-# x = Input(shape=(None,WINDOW*2,VOCAB_SIZE,3))
-# y = Input(shape=(None,VOCAB_SIZE))
-
+import pickle
 
 EMB_DIM=DIMENSION
 x_train=np.load("data/x_train.npy")
 y_train=np.load("data/y_train.npy")
-
-print("loaded arrays\n")
+print("loaded arrays")
 
 f = open("data/word2int.json","r")
 word2int = dict(json.load(f))
 f.close()
 
-#initialise with random weights
-# w1=tf.Variable(tf.random.normal([WINDOW*2,VOCAB_SIZE,3,EMB_DIM]))
-# b1=tf.Variable(tf.random.normal([EMB_DIM]))
-
 opt_adam=tf.optimizers.Adam()
 opt_sgd=tf.optimizers.SGD()
+
 EPOCHS=200
 FINAL_DIM=VOCAB_SIZE*WINDOW*2*3
 
+"""
+DO NOT CHANGE DTYPE TO FLOAT32. CRASHES RANDOMLY.
+"""
 def train(x_train,y_train,optimizer=opt_sgd):
-    w1=tf.Variable(tf.random.normal([FINAL_DIM,EMB_DIM]))
-    b1=tf.Variable(tf.random.normal([EMB_DIM]))
-    w2=tf.Variable(tf.random.normal([EMB_DIM,VOCAB_SIZE]))
-    b2=tf.Variable(tf.random.normal([VOCAB_SIZE]))
+    w1=tf.Variable(tf.random.normal([FINAL_DIM,EMB_DIM],dtype="float64"),dtype="float64")
+    b1=tf.Variable(tf.random.normal([EMB_DIM],dtype="float64"),dtype="float64")
+    w2=tf.Variable(tf.random.normal([EMB_DIM,VOCAB_SIZE],dtype="float64"),dtype="float64")
+    b2=tf.Variable(tf.random.normal([VOCAB_SIZE],dtype="float64"),dtype="float64")
 
     for _ in range(EPOCHS):
-        with tf.GradientTape(persistent=True) as t:
+        with tf.GradientTape() as t:
             hidden_layer=tf.add(tf.matmul(x_train,w1),b1)
             output_layer = tf.nn.softmax(tf.add( tf.matmul(hidden_layer,w2),b2))
-            # print(output_layer)
             cross_entropy_loss = tf.reduce_mean(-tf.math.reduce_sum(y_train * tf.math.log(output_layer), axis=[1]))
 
             grads = t.gradient(cross_entropy_loss, [w1,b1,w2,b2])
@@ -55,12 +50,15 @@ def get_vector(w1,b1,word_idx):
 
 print("start training\n")
 w1,b1=train(x_train,y_train)
+print(f"\nTraining complete with {EPOCHS} epochs\n")
 
-print(f"Training complete for {EPOCHS} epochs gg")
+with open("saved_weights/w1","wb") as f:
+    pickle.dump(w1,f)
 
-print("\nTest embeddings\n")
+with open("saved_weights/b1","wb") as f:
+    pickle.dump(b1,f)
 
-print(get_vector(w1,b1,word2int["used"]))
+print("weights abd biases saved at 'saved_weights/'")
 
 """
 Sample output of embedding for word "used":
@@ -71,3 +69,15 @@ tf.Tensor(
 
 Shape will be dimension dependent
 """
+
+#save all word embeddings
+all_words=list(word2int.keys())
+word_embeddings={}
+
+for word in all_words:
+    word_embeddings[word]=list(np.asarray(get_vector(w1,b1,word2int[word])))
+
+with open("saved_embeddings/generated_embeddings.json","w") as f:
+    json.dump(word_embeddings,f)
+
+print("all word embeddings saved at 'saved_embeddings/generated_embeddings.json")

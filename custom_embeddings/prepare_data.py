@@ -1,4 +1,3 @@
-import itertools
 import numpy as np
 import json
 from constants import *
@@ -203,7 +202,7 @@ for index,value in enumerate(x):
 
 #multiply one hot array and context map array
 x_train=[]
-y_train=np.asarray(y_onehot,dtype="float32")
+y_train=np.asarray(y_onehot,dtype="float64")
 
 for oneh,con in zip(x_onehot,x_context):
     temp=[]
@@ -213,15 +212,13 @@ for oneh,con in zip(x_onehot,x_context):
 
     x_train.append(np.array(temp).flatten())
         
-x_train=np.asarray(x_train,dtype="float32")
+x_train=np.asarray(x_train,dtype="float64")
 
-print("x_train shape: ",x_train.shape)
-print("y_train shape: ",y_train.shape)
+# print("x_train shape: ",x_train.shape)
+# print("y_train shape: ",y_train.shape)
 
 np.save("data/x_train.npy",x_train)
 np.save("data/y_train.npy",y_train)
 
 with open("data/word2int.json","w") as f:
     json.dump(word2int,f)
-# print(vocab_size)
-# print(x_train[0])

@@ -109,4 +109,6 @@ Sample of the expected out (just a sample, not complete output):
              'used': [2.3333333333333335, 3, 0]}}
 
 
+
+The last 0 from this context matrix will be replaced by probabilities soon.
 """
