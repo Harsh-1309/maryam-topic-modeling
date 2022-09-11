@@ -41,6 +41,7 @@ The custom_embeddings directory has 4 scripts:
     - Layers can be increased or more specialised/complex layers can be added for better performance. 
     - The weights and biases of trained model and correspondingly generated word embeddings for each word in the dataset are saved in "saved_weights/" and "saved_embeddings/" directories respectively. 
 
+###  This architecture follows simialr approach to how word2vec is trained, but uses more input information than word2vec. In theory it should perform better, but through testing and benchmarking is yet to be done.
 
-
+### These embeddings can be used for any purpose, may it be classification or clustering or topic modelling. 
  
