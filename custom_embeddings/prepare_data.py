@@ -1,3 +1,4 @@
+from functools import partial
 import numpy as np
 import json
 
@@ -84,22 +85,21 @@ with open(DATASET_FILE,"r") as f:
             context_=data[word]
             print("context starts\n")
             print(context_,len(context_))
+            
             # if words are repeated multiple times in same line
-            full_context=[]
+            full_dataset_context=[]
             word_index=indices(line,word)
             line_len=len(line)
 
-            # if len(context_)>=WINDOW*2:
-            #     print(line)
-            #     print(word_index)
-
             for wi in word_index:
+                full_context=[]
                 if check_left_pad(wi,line_len)==True and check_right_pad(wi,line_len)==True:
                     for i in range(WINDOW):
-                        if len(full_context) <6:
-                            full_context.append(line[wi-i-1]) #left context
-                            full_context.append(line[wi+i+1]) # followed by right context
-                    print(full_context, " if se aaya")
+
+                        full_context.append(line[wi-i-1]) #left context
+                        full_context.append(line[wi+i+1]) # followed by right context
+                    full_dataset_context.append(full_context)
+                    print(full_dataset_context, " if se aaya")
                 else:   
 
                     left_check=check_left_pad(wi,line_len)
@@ -111,15 +111,15 @@ with open(DATASET_FILE,"r") as f:
                         avail_words=WINDOW-rpc
                         print("right mai chaiye ", rpc, avail_words)
                         for i in range(WINDOW):
-                            if len(full_context) <6:
-                                full_context.append(line[wi-i-1])
+                            # if len(full_context) <6:
+                            full_context.append(line[wi-i-1])
                             if avail_words !=0:
-                                if len(full_context) <6:
-                                    full_context.append(line[wi+i+1])
+                                # if len(full_context) <6:
+                                full_context.append(line[wi+i+1])
                                 avail_words-=1
                             else:
-                                if len(full_context) <6:
-                                    full_context.append(PAD_STRING)
+                                # if len(full_context) <6:
+                                full_context.append(PAD_STRING)
                         print(full_context, " else if se aaya")
 
                     elif right_check == True:
@@ -129,16 +129,19 @@ with open(DATASET_FILE,"r") as f:
                         print("left mai chaiye ",rpc,avail_words)
                         for i in range(WINDOW):
                             if avail_words !=0:
-                                if len(full_context) <6:
-                                    full_context.append(line[wi-i-1])
+                                # if len(full_context) <6:
+                                full_context.append(line[wi-i-1])
                                 avail_words-=1
                             else:
-                                if len(full_context) <6:
-                                    full_context.append(PAD_STRING)
+                                # if len(full_context) <6:
+                                full_context.append(PAD_STRING)
 
-                            if len(full_context) <6:
-                                full_context.append(line[wi+i+1])
-                        print(full_context, " else elif se aaya")
+                            # if len(full_context) <6:
+                            full_context.append(line[wi+i+1])
+
+
+                        full_dataset_context.append(full_context)
+                        print(full_dataset_context, " if elif aaya")
 
                     else:
                         rpc_right= right_pad_count(wi,line_len)
@@ -148,77 +151,21 @@ with open(DATASET_FILE,"r") as f:
 
                         for i in range(WINDOW):
                             if avail_words_left !=0:
-                                if len(full_context) <6:
-                                    full_context.append(line[wi-i-1])
+                                # if len(full_context) <6:
+                                full_context.append(line[wi-i-1])
                                 avail_words_left-=1
                             else:
-                                if len(full_context) <6:
-                                    full_context.append(PAD_STRING)
+                                # if len(full_context) <6:
+                                full_context.append(PAD_STRING)
 
                             if avail_words_right !=0:
-                                if len(full_context) <6:
-                                    full_context.append(line[wi+i+1])
+                                # if len(full_context) <6:
+                                full_context.append(line[wi+i+1])
                                 avail_words_right-=1
                             else:
-                                if len(full_context) <6:
-                                    full_context.append(PAD_STRING)
+                                # if len(full_context) <6:
+                                full_context.append(PAD_STRING)
 
-                        print(full_context, " else else se aaya")
-                        # print("PADDING ADD KAR else wala")
-                # print("YET TO DO MULTIPLE CONTEXT")
-
-            # else:
-            #     for wi in word_index:
-            #         left_check=check_left_pad(wi,line_len)
-            #         right_check=check_right_pad(wi,line_len)
-            #         if left_check == True:
-            #             # rpc= required pad count
-            #             rpc= right_pad_count(wi,line_len)
-            #             avail_words=WINDOW-rpc
-            #             print("right mai chaiye ", rpc, avail_words)
-            #             for i in range(WINDOW):
-            #                 full_context.append(line[wi-i-1])
-            #                 if avail_words !=0:
-            #                     full_context.append(line[wi+i+1])
-            #                     avail_words-=1
-            #                 else:
-            #                     full_context.append(PAD_STRING)
-            #             print(full_context)
-
-            #         elif right_check == True:
-            #             # rpc= required pad count
-            #             rpc= left_pad_count(wi,line_len)
-            #             avail_words=WINDOW-rpc
-            #             print("left mai chaiye ",rpc,avail_words)
-            #             for i in range(WINDOW):
-            #                 if avail_words !=0:
-            #                     full_context.append(line[wi-i-1])
-            #                     avail_words-=1
-            #                 else:
-            #                     full_context.append(PAD_STRING)
-            #                 full_context.append(line[wi+i+1])
-            #             print(full_context)
-
-            #         else:
-            #             rpc_right= right_pad_count(wi,line_len)
-            #             rpc_left= left_pad_count(wi,line_len)
-            #             avail_words_left=WINDOW-rpc_left
-            #             avail_words_right=WINDOW-rpc_right
-
-            #             for i in range(WINDOW):
-            #                 if avail_words_left !=0:
-            #                     full_context.append(line[wi-i-1])
-            #                     avail_words_left-=1
-            #                 else:
-            #                     full_context.append(PAD_STRING)
-
-            #                 if avail_words_right !=0:
-            #                     full_context.append(line[wi+i+1])
-            #                     avail_words_right-=1
-            #                 else:
-            #                     full_context.append(PAD_STRING)
-
-            #             print(full_context)
-                            
-                # print("YAHA BHI PADDING CHAIYE 1")
+                        full_dataset_context.append(full_context)
+                        print(full_dataset_context, " if se aaya")
 
