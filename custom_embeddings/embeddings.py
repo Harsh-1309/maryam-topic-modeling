@@ -9,14 +9,17 @@ import json
 import pickle
 
 EMB_DIM=DIMENSION
+
+# load the data arrays that were previously saved
 x_train=np.load("data/x_train.npy")
 y_train=np.load("data/y_train.npy")
-print("loaded arrays")
 
+# load word2int previosuly saved
 f = open("data/word2int.json","r")
 word2int = dict(json.load(f))
 f.close()
 
+# set optimizers
 opt_adam=tf.optimizers.Adam()
 opt_sgd=tf.optimizers.SGD()
 
@@ -26,32 +29,50 @@ FINAL_DIM=VOCAB_SIZE*WINDOW*2*3
 """
 DO NOT CHANGE DTYPE TO FLOAT32. CRASHES RANDOMLY.
 """
+
 def train(x_train,y_train,optimizer=opt_sgd):
+
+    # initialise the weights and biases for both the layers.
+    # w1,b1 for between input layer and hidden layer, hence shape [input,hidden]
+    # w2,b2 for between hidden layer and output layer, hence shape is [hidden,output]
+    # more weights and biases need to be added if hidden layers are increased 
     w1=tf.Variable(tf.random.normal([FINAL_DIM,EMB_DIM],dtype="float64"),dtype="float64")
     b1=tf.Variable(tf.random.normal([EMB_DIM],dtype="float64"),dtype="float64")
     w2=tf.Variable(tf.random.normal([EMB_DIM,VOCAB_SIZE],dtype="float64"),dtype="float64")
     b2=tf.Variable(tf.random.normal([VOCAB_SIZE],dtype="float64"),dtype="float64")
 
+    # iterate over epochs for updating weights and biases
     for _ in range(EPOCHS):
+        # use GradientTape to watch tensors in context
         with tf.GradientTape() as t:
+            # update w1,b1
             hidden_layer=tf.add(tf.matmul(x_train,w1),b1)
+
+            # update w2,b2
             output_layer = tf.nn.softmax(tf.add( tf.matmul(hidden_layer,w2),b2))
+            
+            # compute loss (cross entropy here) for backprop
             cross_entropy_loss = tf.reduce_mean(-tf.math.reduce_sum(y_train * tf.math.log(output_layer), axis=[1]))
 
+            # compute gradient and use optimizer to update the weights    
             grads = t.gradient(cross_entropy_loss, [w1,b1,w2,b2])
             optimizer.apply_gradients(zip(grads,[w1,b1,w2,b2]))
+
+            # log the training loss 
             if(_ % 5 == 0):
                 print("loss: ", cross_entropy_loss)
 
     return w1,b1
 
+# get final word embeddings from w,b and word2int 
 def get_vector(w1,b1,word_idx):
     return(w1+b1)[word_idx]
 
-print("start training\n")
+# start the training process
 w1,b1=train(x_train,y_train)
 print(f"\nTraining complete with {EPOCHS} epochs\n")
 
+# pickle and save the weights and biases
 with open("saved_weights/w1","wb") as f:
     pickle.dump(w1,f)
 
@@ -70,7 +91,7 @@ tf.Tensor(
 Shape will be dimension dependent
 """
 
-#save all word embeddings
+#generate and save all word embeddings
 all_words=list(word2int.keys())
 word_embeddings={}
 

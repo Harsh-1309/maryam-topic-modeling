@@ -1,3 +1,7 @@
+"""
+These constants will be used throughout the code base
+"""
+
 DATASET_FILE ="data/text6"
 PAD_STRING = "%s"
 WINDOW=3
