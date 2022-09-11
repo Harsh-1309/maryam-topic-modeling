@@ -1,7 +1,11 @@
+from cgi import test
 from functools import partial
+from optparse import Values
+from queue import Empty
 import numpy as np
 import json
 from constants import *
+from tqdm import tqdm
 
 words=[]
 
@@ -67,8 +71,8 @@ def right_pad_count(word_ind,len):
 def indices(lst, item):
     return [i for i, x in enumerate(lst) if x == item]
 
-X=[]
-Y=[]
+x=[]
+y=[]
 
 
 with open(DATASET_FILE,"r") as f:
@@ -148,8 +152,53 @@ with open(DATASET_FILE,"r") as f:
                         full_dataset_context.append(full_context)
                         # print(full_dataset_context, " if se aaya")
 
-            X.extend(full_dataset_context)
-            Y.append(word)
+            x.extend(full_dataset_context)
+            for _ in range(len(full_dataset_context)):
+                y.append(word)
         
-print(X)
-print(Y)
+
+
+print(x)
+print(y)
+ 
+# replace the context strings with corresponding context matrix
+
+x_context=[]
+y_context=[]
+
+for index,value in tqdm(enumerate(x)):
+    temp=[]
+    for k in value:
+        if k == PAD_STRING:
+            temp.append([0,0,0])
+        else:
+            if k != y[index]:
+                temp.append(data[y[index]][k])
+            # word in self context is still an issue
+            else:
+                temp.append([0,1,0])
+    x_context.append(temp)
+    y_context.append(y[index])
+
+
+print(x_context)
+print(y_context)
+
+x_onehot=[]
+y_onehot=[]
+
+print(one_hot)
+
+for index,value in enumerate(x):
+    temp=[]
+    for k in value:
+        if k == PAD_STRING:
+            temp.append(list(padding_onehot))
+        else:
+            temp.append(list(one_hot[k]))
+
+    x_onehot.append(temp)
+    y_onehot.append(list(one_hot[y[index]]))
+
+print(x_onehot)
+print(y_onehot)
