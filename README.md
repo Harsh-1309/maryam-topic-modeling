@@ -36,7 +36,7 @@ The custom_embeddings directory has 4 scripts:
     - This data is saved as numpy array in "custom_embeddings/data/" directory.
 
 - `embeddings.py`
-    - This has a simple implementation of a neural network with 1 input, 1 hidden and 1 output layer.
+    - This has a simple implementation of a neural network with 1 input, 2 hidden and 1 output layer.
     - The weights between input and hidden layer give us the actual embeddings and hence is frequently termed as "embeddings layer" as well.
     - Layers can be increased or more specialised/complex layers can be added for better performance. 
     - The weights and biases of trained model and correspondingly generated word embeddings for each word in the dataset are saved in "saved_weights/" and "saved_embeddings/" directories respectively. 

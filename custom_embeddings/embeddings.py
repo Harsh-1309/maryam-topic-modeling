@@ -36,48 +36,53 @@ def train(x_train,y_train,optimizer=opt_sgd):
     # w1,b1 for between input layer and hidden layer, hence shape [input,hidden]
     # w2,b2 for between hidden layer and output layer, hence shape is [hidden,output]
     # more weights and biases need to be added if hidden layers are increased 
-    w1=tf.Variable(tf.random.normal([FINAL_DIM,EMB_DIM],dtype="float64"),dtype="float64")
-    b1=tf.Variable(tf.random.normal([EMB_DIM],dtype="float64"),dtype="float64")
-    w2=tf.Variable(tf.random.normal([EMB_DIM,VOCAB_SIZE],dtype="float64"),dtype="float64")
-    b2=tf.Variable(tf.random.normal([VOCAB_SIZE],dtype="float64"),dtype="float64")
+    w1=tf.Variable(tf.random.normal([FINAL_DIM,VOCAB_SIZE],dtype="float64"),dtype="float64")
+    b1=tf.Variable(tf.random.normal([VOCAB_SIZE],dtype="float64"),dtype="float64")
+    w2=tf.Variable(tf.random.normal([VOCAB_SIZE,EMB_DIM],dtype="float64"),dtype="float64")
+    b2=tf.Variable(tf.random.normal([EMB_DIM],dtype="float64"),dtype="float64")
+    w3=tf.Variable(tf.random.normal([EMB_DIM,VOCAB_SIZE],dtype="float64"),dtype="float64")
+    b3=tf.Variable(tf.random.normal([VOCAB_SIZE],dtype="float64"),dtype="float64")
+    
 
     # iterate over epochs for updating weights and biases
     for _ in range(EPOCHS):
         # use GradientTape to watch tensors in context
         with tf.GradientTape() as t:
             # update w1,b1
-            hidden_layer=tf.add(tf.matmul(x_train,w1),b1)
+            hidden_layer1=tf.add(tf.matmul(x_train,w1),b1)
+
+            hidden_layer2=tf.add(tf.matmul(hidden_layer1,w2),b2)
 
             # update w2,b2
-            output_layer = tf.nn.softmax(tf.add( tf.matmul(hidden_layer,w2),b2))
+            output_layer = tf.nn.softmax(tf.add( tf.matmul(hidden_layer2,w3),b3))
             
             # compute loss (cross entropy here) for backprop
             cross_entropy_loss = tf.reduce_mean(-tf.math.reduce_sum(y_train * tf.math.log(output_layer), axis=[1]))
 
             # compute gradient and use optimizer to update the weights    
-            grads = t.gradient(cross_entropy_loss, [w1,b1,w2,b2])
-            optimizer.apply_gradients(zip(grads,[w1,b1,w2,b2]))
+            grads = t.gradient(cross_entropy_loss, [w1,b1,w2,b2,w3,b3])
+            optimizer.apply_gradients(zip(grads,[w1,b1,w2,b2,w3,b3]))
 
             # log the training loss 
             if(_ % 5 == 0):
                 print("loss: ", cross_entropy_loss)
 
-    return w1,b1
+    return w2,b2
 
 # get final word embeddings from w,b and word2int 
-def get_vector(w1,b1,word_idx):
-    return(w1+b1)[word_idx]
+def get_vector(w,b,word_idx):
+    return(w+b)[word_idx]
 
 # start the training process
-w1,b1=train(x_train,y_train)
+w,b=train(x_train,y_train)
 print(f"\nTraining complete with {EPOCHS} epochs\n")
 
 # pickle and save the weights and biases
-with open("saved_weights/w1","wb") as f:
-    pickle.dump(w1,f)
+with open("saved_weights/w","wb") as f:
+    pickle.dump(w,f)
 
-with open("saved_weights/b1","wb") as f:
-    pickle.dump(b1,f)
+with open("saved_weights/b","wb") as f:
+    pickle.dump(b,f)
 
 print("weights abd biases saved at 'saved_weights/'")
 
@@ -96,7 +101,7 @@ all_words=list(word2int.keys())
 word_embeddings={}
 
 for word in all_words:
-    word_embeddings[word]=list(np.asarray(get_vector(w1,b1,word2int[word])))
+    word_embeddings[word]=list(np.asarray(get_vector(w,b,word2int[word])))
 
 with open("saved_embeddings/generated_embeddings.json","w") as f:
     json.dump(word_embeddings,f)
