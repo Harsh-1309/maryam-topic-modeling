@@ -54,10 +54,12 @@ def train(x_train,y_train,optimizer=opt_sgd):
         with tf.GradientTape() as t:
             # update w1,b1
             hidden_layer1=tf.add(tf.matmul(x_train,w1),b1)
-            print(hidden_layer1)
+            hidden_layer1=tf.math.sigmoid(hidden_layer1)
+            # print(hidden_layer1)
             # update w2,b2
             hidden_layer2=tf.add(tf.matmul(hidden_layer1,w2),b2)
-            print(hidden_layer2)
+            hidden_layer2=tf.math.sigmoid(hidden_layer2)
+            # print(hidden_layer2)
             # update w3,b3
             output_layer = tf.add( tf.matmul(hidden_layer2,w3),b3)
             """
@@ -65,6 +67,7 @@ def train(x_train,y_train,optimizer=opt_sgd):
             calculated for higher values
             """
             # sft_max=tf.Variable(shape=output_layer.shape)
+            """
             sft_max=[]
             sm=lambda x:np.exp(x - max(x))/np.sum(np.exp(x - max(x)))
             for i in tqdm(output_layer,total=output_layer.shape[0]):
@@ -72,7 +75,8 @@ def train(x_train,y_train,optimizer=opt_sgd):
             output_layer=tf.convert_to_tensor(sft_max,dtype="float64")
             # print(softmax(tf.add( tf.matmul(hidden_layer2,w3),b3)))
             print(output_layer)
-
+            """
+            output_layer = tf.nn.softmax(tf.add( tf.matmul(hidden_layer2,w3),b3))
             # compute loss (cross entropy here) for backprop
             cross_entropy_loss = tf.reduce_mean(-tf.math.reduce_sum(y_train * tf.math.log(output_layer), axis=[1]))
 
@@ -81,7 +85,7 @@ def train(x_train,y_train,optimizer=opt_sgd):
             optimizer.apply_gradients(zip(grads,[w1,b1,w2,b2,w3,b3]))
 
             # log the training loss 
-            if(_ % 5 == 0):
+            if(_ % 50 == 0):
                 print("loss: ", cross_entropy_loss)
 
     return w2,b2

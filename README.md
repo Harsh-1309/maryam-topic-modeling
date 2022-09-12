@@ -9,12 +9,13 @@
 
 The more the information that can be passed as input, the better the vectors will be. This is because embeddings is all about representing the information distribution in the dataset.
 
-The custom_embeddings directory has 4 scripts:
+The custom_embeddings directory has 5 scripts:
 ``` 
 - constants.py
 - context_mapping.py
 - prepare_data.py
 - embeddings.py 
+- visualise_results.py
 ```
 
 - ` constants.py ` 
@@ -41,6 +42,11 @@ The custom_embeddings directory has 4 scripts:
     - Layers can be increased or more specialised/complex layers can be added for better performance. 
     - The weights and biases of trained model and correspondingly generated word embeddings for each word in the dataset are saved in "saved_weights/" and "saved_embeddings/" directories respectively. 
 
+- `visualise_results.py`
+    - This script will take in the embeddings and then plot it.
+    - As our embeddings have a very high dimension, it needs to be reduced into 2D space.
+    - This is achieved using any dimension reduction technique, TSNE used here.
+    - A sample of how embeddings look can be seen in image "vectors.png".
 ###  This architecture follows simialr approach to how word2vec is trained, but uses more input information than word2vec. In theory it should perform better, but through testing and benchmarking is yet to be done.
 
 ### These embeddings can be used for any purpose, may it be classification or clustering or topic modelling. 
