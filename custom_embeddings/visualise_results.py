@@ -7,7 +7,7 @@ from sklearn import preprocessing
 
 normalizer = preprocessing.Normalizer()
 
-with open("saved_embeddings/generated_embeddings_.json","r") as f:
+with open("saved_embeddings/generated_embeddings.json","r") as f:
     embeddings=dict(json.load(f))
 
 labels = []
@@ -15,9 +15,9 @@ tokens = []
 for w in embeddings.keys():
     labels.append(w)
     tokens.append(embeddings[w])
-tsne_model = TSNE(perplexity=40, n_components=2, init='pca', n_iter=2500, random_state=23)
+tsne_model = TSNE(perplexity=20, n_components=2, init='pca', n_iter=2500, random_state=23)
 new_values = tsne_model.fit_transform(np.array(tokens))
-# new_values =  normalizer.fit_transform(new_values, 'l2')
+# new_values =  normalizer.fit_transform(new_values, 'l1')
 x = []
 y = []
 for value in new_values:
@@ -33,4 +33,6 @@ for i in range(len(x)):
                      textcoords='offset points',
                      ha='right',
                      va='bottom')
+
+plt.savefig("vectors.png")
 plt.show()
