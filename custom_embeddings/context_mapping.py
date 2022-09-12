@@ -1,6 +1,7 @@
 import json
 import pprint
 from constants import *
+from tqdm import tqdm
 
 def counter_update(list,newlist):
     for _,x in enumerate(newlist):
@@ -18,7 +19,7 @@ def makeContext():
     window={}
     f=open(DATASET_FILE,"r")
     # read and iterate through each line of the dataset
-    for line in f:
+    for line in tqdm(f):
         line=line.lower().strip().split(" ") #Clean the data by splitting at spaces 
         doclen=len(line)
 

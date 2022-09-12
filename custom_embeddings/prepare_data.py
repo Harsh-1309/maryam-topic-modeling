@@ -84,7 +84,7 @@ y=[]
 
 with open(DATASET_FILE,"r") as f:
     # iterate line by line through dataset
-    for line in f:
+    for line in tqdm(f):
         line=line.lower().strip().split()
         for word in line:
             context_=data[word]
@@ -173,36 +173,31 @@ with open(DATASET_FILE,"r") as f:
         
  
 # replace the context strings with corresponding context matrix
+# and replace with one hot encoded vectors 
 x_context=[]
 y_context=[]
 
-for index,value in enumerate(x):
-    temp=[]
-    for k in value:
-        if k == PAD_STRING:
-            temp.append([0,0,0])
-        else:
-            if k != y[index]:
-                temp.append(data[y[index]][k])
-            # word in self context is still an issue!!
-            else:
-                temp.append([0,1,0])
-    x_context.append(temp)
-    y_context.append(y[index])
-
-# replace with one hot encoded vectors 
 x_onehot=[]
 y_onehot=[]
 
-for index,value in enumerate(x):
-    temp=[]
+for index,value in tqdm(enumerate(x)):
+    temp1=[]
+    temp2=[]
     for k in value:
         if k == PAD_STRING:
-            temp.append(list(padding_onehot))
+            temp1.append([0,0,0])
+            temp2.append(list(padding_onehot))
         else:
-            temp.append(list(one_hot[k]))
+            temp2.append(list(one_hot[k]))
+            if k != y[index]:
+                temp1.append(data[y[index]][k])
+            # word in self context is still an issue!!
+            else:
+                temp1.append([0,1,0])
+    x_context.append(temp1)
+    y_context.append(y[index])
 
-    x_onehot.append(temp)
+    x_onehot.append(temp2)
     y_onehot.append(list(one_hot[y[index]]))
 
 # multiply one hot array and context map array
@@ -211,7 +206,7 @@ x_train=[]
 y_train=np.asarray(y_onehot,dtype="float64")
 
 # multiply element-wise
-for oneh,con in zip(x_onehot,x_context):
+for oneh,con in tqdm(zip(x_onehot,x_context)):
     temp=[]
     for j,k in zip(oneh,con):
         multiplied_data=np.multiply.outer(np.array(j),np.array(k))
