@@ -8,7 +8,6 @@ import numpy as np
 import json
 import pickle
 
-EMB_DIM=DIMENSION
 
 # load the data arrays that were previously saved
 x_train=np.load("data/x_train.npy")
@@ -23,9 +22,6 @@ f.close()
 opt_adam=tf.optimizers.Adam()
 opt_sgd=tf.optimizers.SGD()
 
-EPOCHS=200
-FINAL_DIM=VOCAB_SIZE*WINDOW*2*3
-
 """
 DO NOT CHANGE DTYPE TO FLOAT32. CRASHES RANDOMLY.
 """
@@ -38,9 +34,9 @@ def train(x_train,y_train,optimizer=opt_sgd):
     # more weights and biases need to be added if hidden layers are increased 
     w1=tf.Variable(tf.random.normal([FINAL_DIM,VOCAB_SIZE],dtype="float64"),dtype="float64")
     b1=tf.Variable(tf.random.normal([VOCAB_SIZE],dtype="float64"),dtype="float64")
-    w2=tf.Variable(tf.random.normal([VOCAB_SIZE,EMB_DIM],dtype="float64"),dtype="float64")
-    b2=tf.Variable(tf.random.normal([EMB_DIM],dtype="float64"),dtype="float64")
-    w3=tf.Variable(tf.random.normal([EMB_DIM,VOCAB_SIZE],dtype="float64"),dtype="float64")
+    w2=tf.Variable(tf.random.normal([VOCAB_SIZE,DIMENSION],dtype="float64"),dtype="float64")
+    b2=tf.Variable(tf.random.normal([DIMENSION],dtype="float64"),dtype="float64")
+    w3=tf.Variable(tf.random.normal([DIMENSION,VOCAB_SIZE],dtype="float64"),dtype="float64")
     b3=tf.Variable(tf.random.normal([VOCAB_SIZE],dtype="float64"),dtype="float64")
     
 
@@ -51,9 +47,10 @@ def train(x_train,y_train,optimizer=opt_sgd):
             # update w1,b1
             hidden_layer1=tf.add(tf.matmul(x_train,w1),b1)
 
+            # update w2,b2
             hidden_layer2=tf.add(tf.matmul(hidden_layer1,w2),b2)
 
-            # update w2,b2
+            # update w3,b3
             output_layer = tf.nn.softmax(tf.add( tf.matmul(hidden_layer2,w3),b3))
             
             # compute loss (cross entropy here) for backprop

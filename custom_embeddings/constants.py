@@ -10,6 +10,9 @@ WINDOW_FLOAT = 3.0
 MAX_RATE = 8.0
 DIMENSION = 10 # initially dim was 100
 SAMPLE_ACCURACY = 4000
+EPOCHS=200
+
 WORDS=[]
 CONTEXT={} # This dict will store context map for entire dataset
 VOCAB_SIZE=14
+FINAL_DIM=VOCAB_SIZE*WINDOW*2*3
