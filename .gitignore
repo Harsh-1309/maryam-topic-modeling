@@ -3,3 +3,4 @@ model_pretrained
 test.py
 custom_embeddings/data/x_train.npy
 custom_embeddings/data/y_train.npy
+archive/
