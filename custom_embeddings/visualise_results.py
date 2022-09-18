@@ -15,9 +15,9 @@ tokens = []
 for w in embeddings.keys():
     labels.append(w)
     tokens.append(embeddings[w])
-tsne_model = TSNE(perplexity=2,n_components=2, random_state=23)
+tsne_model = TSNE(perplexity=20,n_components=2, random_state=23)
 new_values = tsne_model.fit_transform(np.array(tokens))
-new_values =  normalizer.fit_transform(new_values, 'l1')
+# new_values =  normalizer.fit_transform(new_values, 'l2')
 x = []
 y = []
 for value in new_values:
