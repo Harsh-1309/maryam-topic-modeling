@@ -36,7 +36,7 @@ def smi(x):
     # return B/C
 
 
-def train(x_train,y_train,optimizer=opt_sgd):
+def train(x_train,y_train,optimizer=opt_adam):
 
     # initialise the weights and biases for both the layers.
     # w1,b1 for between input layer and hidden layer, hence shape [input,hidden]
@@ -55,14 +55,25 @@ def train(x_train,y_train,optimizer=opt_sgd):
         with tf.GradientTape() as t:
             # update w1,b1
             hidden_layer=tf.add(tf.matmul(x_train,w1),b1)
-            output_layer = tf.nn.softmax(tf.add( tf.matmul(hidden_layer,w2),b2))
-            cross_entropy_loss = tf.reduce_mean(-tf.math.reduce_sum(y_train * tf.math.log(output_layer), axis=[1]))
-  
+            # hidden_layer=hidden_layer/tf.norm(hidden_layer)
+            # print(np.array(hidden_layer.shape)
+            
+            output_layer = tf.add( tf.matmul(hidden_layer,w2),b2)
+            # hidden_layer=hidden_layer/tf.norm(hidden_layer)
+            # output_layer=output_layer/tf.norm(output_layer)
+            
+            output_layer=tf.nn.softmax_cross_entropy_with_logits(y_train,output_layer)
+            # cross_entropy_loss = tf.reduce_mean(-tf.math.reduce_sum(y_train * tf.math.log(output_layer), axis=[1]))
+            # print(cross_entropy_loss)
+            cross_entropy_loss=tf.reduce_mean(output_layer)
+            
+            # cross_entropy_loss = tf.reduce_mean(-tf.math.reduce_sum(y_train * tf.math.log(output_layer), axis=[1]))
+            # print(y_train * tf.math.log(output_layer))
             grads = t.gradient(cross_entropy_loss, [w1,b1,w2,b2])
             optimizer.apply_gradients(zip(grads,[w1,b1,w2,b2]))
 
             # log the training loss 
-            if(_ % 5 == 0):
+            if(_ % 200 == 0):
                 print("loss: ", cross_entropy_loss)
 
     return w1,b1
@@ -73,13 +84,13 @@ def get_vector(w,b,word_idx):
 
 # start the training process
 
-np.random.seed(5)
+np.random.seed(7)
 np.random.shuffle(x_train)
 
-np.random.seed(5)
+np.random.seed(7)
 np.random.shuffle(y_train)
 
-w,b=train(x_train,y_train)
+w,b=train(x_train[:],y_train[:])
 print(f"\nTraining complete with {EPOCHS} epochs\n")
 
 # pickle and save the weights and biases

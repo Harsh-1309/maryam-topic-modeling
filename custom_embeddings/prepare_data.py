@@ -2,6 +2,7 @@ import numpy as np
 import json
 from constants import *
 from tqdm import tqdm
+import gc
 
 # create a list for all the words int he datset
 words=[]
@@ -16,6 +17,7 @@ with open(DATASET_FILE,"r") as f:
 #set distorts ordering with every run, might result in expected results
 words=list(dict.fromkeys(words))
 vocab_size=len(words)
+
 
 #vocab size will be updated based on dataset used
 with open("constants.py","a") as const:
@@ -34,6 +36,9 @@ for i,word in enumerate(words):
     word2int[word] = i
     int2word[i] = word
 
+del words
+gc.collect()
+
 def convert_to_onehot(data_index,vocab_size):
     temp_array=np.zeros(vocab_size)
     temp_array[data_index]=1
@@ -41,19 +46,25 @@ def convert_to_onehot(data_index,vocab_size):
 
 for key,val in word2int.items():
     one_hot[key]=convert_to_onehot(val,vocab_size)
-
-# one hot encoded data achieved till now.
+gc.collect()
+# one hot encoded data 
+# achieved till now.
 # combine this with the [dist,freq,prob] to get final data
 # Now continue with getting context from the context map
 
 f = open(CONTEXT_MAP_PATH,"r")
 data = dict(json.load(f))
+f.close()
 
 def modify_vector(base, multiplying_factor):
     base=np.array(base)
     multiplying_factor=np.array(multiplying_factor)
+    if multiplying_factor[0]>0:
+        hmm= np.divide(np.multiply(base,multiplying_factor[1]),multiplying_factor[0])
+    else:
+        hmm= np.divide(np.multiply(base,multiplying_factor[1]),1)
 
-    return np.divide(np.multiply(base,multiplying_factor[1]),multiplying_factor[0])
+    return hmm
 
 x=[]
 y=[]
@@ -84,6 +95,8 @@ with open(DATASET_FILE,"r") as f:
 
             x.extend(temp_x)
             y.extend(temp_y)
+
+        gc.collect()
 
 # save word2int to get final word embeddings after the training
 with open("data/word2int.json","w") as f:

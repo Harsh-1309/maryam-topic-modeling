@@ -4,19 +4,23 @@ These constants will be used throughout the code base
 
 DATASET_FILE ="data/text6"
 PAD_STRING = "%s"
-WINDOW=3 #make it 3
+WINDOW=2 #make it 3
 CONTEXT_MAP_PATH = "data/context_map_text6.json"
-WINDOW_FLOAT = 3.0
+WINDOW_FLOAT = 2.0
 MAX_RATE = 8.0
-DIMENSION = 10 # initially dim was 100
+DIMENSION = 100 # initially dim was 100
 SAMPLE_ACCURACY = 4000
-EPOCHS=2000
+EPOCHS=25000
 
 WORDS=[]
 CONTEXT={} # This dict will store context map for entire dataset
 # VOCAB_SIZE=7 # was 14 for text6
 
-VOCAB_SIZE=14
+VOCAB_SIZE=627
 # FINAL_DIM=VOCAB_SIZE*WINDOW*2*3
-VOCAB_SIZE=7
+
+
+VOCAB_SIZE=627
+# VOCAB_SIZE=149778
+
 VOCAB_SIZE=7

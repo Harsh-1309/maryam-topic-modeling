@@ -113,3 +113,5 @@ Sample of the expected out (just a sample, not complete output):
 
 The last 0 from this context matrix will be replaced by probabilities soon.
 """
+import gc
+gc.collect()
