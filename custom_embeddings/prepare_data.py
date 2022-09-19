@@ -60,9 +60,9 @@ def modify_vector(base, multiplying_factor):
     base=np.array(base)
     multiplying_factor=np.array(multiplying_factor)
     if multiplying_factor[0]>0:
-        hmm= np.divide(np.multiply(base,multiplying_factor[1]),multiplying_factor[0])
+        hmm= np.divide(np.divide(np.multiply(base,multiplying_factor[1]),multiplying_factor[0]),multiplying_factor[2])
     else:
-        hmm= np.divide(np.multiply(base,multiplying_factor[1]),1)
+        hmm= np.divide(np.divide(np.multiply(base,multiplying_factor[1]),1),multiplying_factor[2])
 
     return hmm
 
