@@ -52,5 +52,5 @@ def find_closest_cs(word_index, vectors):
             max_index = index
     return max_index
 
-print(int2word[str(find_closest('zero', vectors))])
-print(int2word[str(find_closest_cs('zero', vectors))])
+print(int2word[str(find_closest('private', vectors))])
+print(int2word[str(find_closest_cs('private', vectors))])

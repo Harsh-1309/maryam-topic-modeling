@@ -8,7 +8,9 @@ def counter_update(list,newlist):
         # value for key x same in both list and newlist then go into if
         # else add to list. Both list and newlist are dictionaries.
         if x in list.keys():
+            # update distance using context window
             list[x][0] = WINDOW_FLOAT - (list[x][0]+newlist[x][0])/2
+            # update frequency count
             list[x][1] += newlist[x][1]
         else:
             list[x]=newlist[x]
